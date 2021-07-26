@@ -7,9 +7,54 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource AcrylicBackgroundFillColorDefaultBrush}">
 
     <Grid>
+        <ScrollViewer Padding="20" HorizontalAlignment="Left" Width="245">
+            <StackPanel Orientation="Vertical" Height="260" VerticalAlignment="Top">
+                <TextBox Header="Host" PlaceholderText="Enter server IP" />
+                <TextBox Header="Login" PlaceholderText="Enter login" Margin="0,10,0,0" />
+                <PasswordBox Header="Password" PlaceholderText="Enter your password" AutomationProperties.Name="Simple PasswordBox" Margin="0,10,0,0" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Padding="0,15,0,0">
+                    <ToggleButton Name="ToggleButton" Content="Connect" VerticalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Width="103"/>
+                    <!--<muxc:ProgressRing Name="ProgressRing" IsActive="False" Margin="10,0,0,0" />-->
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
 
+        <ListView x:Name="DirectoryList" BorderThickness="0" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Margin="250,44,0,0">
+            <ListView.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem x:Name="Upload" Text="Upload" Icon="Upload"/>
+                    <MenuFlyoutItem x:Name="CerateFolder" Click="CerateFolder_Click" Text="Create folder" Icon="Add"/>
+                </MenuFlyout>
+            </ListView.ContextFlyout>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:Item">
+                    <Grid Margin="0,12,0,12" AutomationProperties.Name="{x:Bind Name}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Type}" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Name}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Size}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind LastModificate}" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <AppBarButton Icon="Setting" Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Height="45">
+                            <AppBarButton.Flyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem x:Name="Download" Text="Download" Icon="Download"/>
+                                    <MenuFlyoutItem x:Name="Delete" Click="Delete_Click" Text="Delete" Icon="Delete"/>
+                                </MenuFlyout>
+                            </AppBarButton.Flyout>
+                        </AppBarButton>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Page>
+    
