@@ -59,6 +59,7 @@ namespace FTP_client
                 ftpRequest.UseBinary = true;
                 ftpRequest.UsePassive = true;
                 ftpRequest.KeepAlive = true;
+                
 
                 using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())
                 {
@@ -100,15 +101,20 @@ namespace FTP_client
                 ftpRequest.UsePassive = true;
                 ftpRequest.KeepAlive = true;
 
-                IBuffer buffer = await FileIO.ReadBufferAsync(file);
+                //IBuffer buffer = await FileIO.ReadBufferAsync(file);
 
-                using (Stream requestStream = ftpRequest.GetRequestStream())
+                using (Stream stream = await file.OpenStreamForReadAsync())
                 {
-                    requestStream.Write(buffer.ToArray(), 0, (int)buffer.Length);
+                    using (Stream requestStream = ftpRequest.GetRequestStream())
+                    {
+                        stream.CopyTo(requestStream);
+                    }
                 }
+
+                
                 using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())
                 {
-                    //Status = ftpResponse.StatusDescription;
+                    var a = ftpResponse.StatusDescription;
                 }
 
             }

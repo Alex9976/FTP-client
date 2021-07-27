@@ -14,6 +14,7 @@ using Windows.ApplicationModel.Contacts;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -37,6 +38,7 @@ namespace FTP_client
         private int _previousIndex { get; set; } = -2;
         private bool _saveData { get; set; } = false;
         private bool _blockLoad { get; set; } = false;
+        private bool _isInitToggle { get; set; } = true;
 
         public MainPage()
         {
@@ -55,6 +57,7 @@ namespace FTP_client
                 Pass.Password = (string)localSettings.Values["password"];
             }
 
+            _isInitToggle = false;
             DirectoryList.ItemsSource = list;
         }
 
@@ -237,7 +240,7 @@ namespace FTP_client
             ToggleSwitch toggleSwitch = sender as ToggleSwitch;
             if (toggleSwitch != null)
             {
-                if (toggleSwitch.IsOn == true)
+                if (toggleSwitch.IsOn && !_isInitToggle)
                 {
                     _saveData = true;
                     localSettings.Values["saveData"] = _saveData;
@@ -245,7 +248,7 @@ namespace FTP_client
                     localSettings.Values["login"] = Login.Text;
                     localSettings.Values["password"] = Pass.Password;
                 }
-                else
+                else if (!toggleSwitch.IsOn && !_isInitToggle)
                 {
                     _saveData = false;
                     localSettings.Values["saveData"] = _saveData;
@@ -417,9 +420,9 @@ namespace FTP_client
             if (_blockLoad)
                 return;
 
-            var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
-
-            //openPicker.FileTypeChoices.Add("All types", new List<string>() { "." });
+            var openPicker = new FileOpenPicker();
+            openPicker.ViewMode = PickerViewMode.Thumbnail; 
+            openPicker.FileTypeFilter.Add("*");
             openPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Downloads;
 
             //savePicker.SuggestedFileName = item.Name;
