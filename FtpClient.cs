@@ -35,7 +35,7 @@ namespace FTP_client
             ftpRequest.UseBinary = true;
             ftpRequest.UsePassive = true;
             ftpRequest.KeepAlive = true;
-            ftpRequest.Timeout = 5000;
+            //ftpRequest.Timeout = 7000;
 
             string response;
             using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())

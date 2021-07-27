@@ -419,7 +419,7 @@ namespace FTP_client
 
             var openPicker = new Windows.Storage.Pickers.FileOpenPicker();
 
-            //savePicker.FileTypeChoices.Add("All types", new List<string>() { "." });
+            //openPicker.FileTypeChoices.Add("All types", new List<string>() { "." });
             openPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Downloads;
 
             //savePicker.SuggestedFileName = item.Name;
