@@ -378,7 +378,9 @@ namespace FTP_client
                 Progress.Visibility = Visibility.Visible;
                 Thread thread = new Thread(UpdateProgress);
                 thread.Start();
-                ftp.DownloadFile(ftp.CurrentDirectory, item.Name, file, item.SizeInBytes);
+
+                Thread downloadThread = new Thread(() => { ftp.DownloadFile(ftp.CurrentDirectory, item.Name, file, item.SizeInBytes); });
+                downloadThread.Start();
             }
         }
 
@@ -423,22 +425,28 @@ namespace FTP_client
             var openPicker = new FileOpenPicker();
             openPicker.ViewMode = PickerViewMode.Thumbnail; 
             openPicker.FileTypeFilter.Add("*");
-            openPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Downloads;
+            openPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
-            //savePicker.SuggestedFileName = item.Name;
-            //Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
             StorageFile file = await openPicker.PickSingleFileAsync();
             if (file != null)
             {
                 //FileInfo.Text = "Uploading: " + file.DisplayName;
                 //Thread thread = new Thread(UpdateProgress);
                 //thread.Start();
-                ftp.UploadFile(ftp.CurrentDirectory, file);
+                Thread thread = new Thread(async () => {
+                    ftp.UploadFile(ftp.CurrentDirectory, file);
+                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                    {
+                        RefreshDirectory();
+                    });
+                });
+                thread.Start();      
             }
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
+            InfoBox.Text = "";
             RefreshDirectory();
         }
     }

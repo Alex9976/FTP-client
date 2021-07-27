@@ -20,7 +20,7 @@
                     <!--<ToggleSwitch x:Name="AutoCon" Header="Autoconnect" Toggled="ToggleSwitch_Toggled_1" OffContent="No" OnContent="Yes" HorizontalAlignment="Center" MinWidth="20" />-->
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Padding="0,15,0,0">
-                    <Button x:Name="RefreshButton" Height="30" Margin="0,0,20,0" FontFamily="Segoe MDL2 Assets" Content="&#xE72C;" IsEnabled="false" Click="RefreshButton_Click" />
+                    <Button x:Name="RefreshButton" Height="32" Margin="0,0,20,0" FontFamily="Segoe MDL2 Assets" Content="&#xE72C;" IsEnabled="false" Click="RefreshButton_Click" />
                     <ToggleButton Name="ToggleButton" Content="Connect" VerticalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Width="103"/>
                     <muxc:ProgressRing Name="ProgressRing" IsActive="False" Margin="10,0,0,0" />
                 </StackPanel>

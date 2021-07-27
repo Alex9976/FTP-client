@@ -69,13 +69,17 @@ namespace FTP_client
                         byte[] buffer = new byte[BUFFER_SIZE];
                         int size;
                         int bytesRead = 0;
-                        while ((size = responseStream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+                        using (Stream fileStream = await file.OpenStreamForWriteAsync())
                         {
-                            byte[] buf = new byte[size];
-                            Array.Copy(buffer, 0, buf, 0, size);
-                            await FileIO.AppendTextAsync(file, Encoding.ASCII.GetString(buf));
-                            bytesRead += size;
-                            progress = (int)(((float)bytesRead / fileSize) * 100);
+                            while ((size = responseStream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+                            {
+                                //byte[] buf = new byte[size];
+                                //Array.Copy(buffer, 0, buf, 0, size);
+                                //await FileIO.AppendTextAsync(file, Encoding.ASCII.GetString(buf));
+                                fileStream.Write(buffer, 0, size);
+                                bytesRead += size;
+                                progress = (int)(((float)bytesRead / fileSize) * 100);
+                            }
                         }
                     }
                 }
@@ -110,11 +114,10 @@ namespace FTP_client
                         stream.CopyTo(requestStream);
                     }
                 }
-
-                
+               
                 using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())
                 {
-                    var a = ftpResponse.StatusDescription;
+                    //var a = ftpResponse.StatusDescription;
                 }
 
             }
