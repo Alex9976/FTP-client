@@ -119,7 +119,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Item.cs" />
+    <Compile Include="DirectoryParser.cs" />
+    <Compile Include="FolderNameInputDlg.xaml.cs">
+      <DependentUpon>FolderNameInputDlg.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FtpClient.cs" />
+    <Compile Include="ItemInfo.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -145,6 +150,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="FolderNameInputDlg.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

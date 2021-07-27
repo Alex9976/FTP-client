@@ -11,50 +11,73 @@
 
     <Grid>
         <ScrollViewer Padding="20" HorizontalAlignment="Left" Width="245">
-            <StackPanel Orientation="Vertical" Height="260" VerticalAlignment="Top">
-                <TextBox Header="Host" PlaceholderText="Enter server IP" />
-                <TextBox Header="Login" PlaceholderText="Enter login" Margin="0,10,0,0" />
-                <PasswordBox Header="Password" PlaceholderText="Enter your password" AutomationProperties.Name="Simple PasswordBox" Margin="0,10,0,0" />
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Padding="0,15,0,0">
-                    <ToggleButton Name="ToggleButton" Content="Connect" VerticalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Width="103"/>
-                    <!--<muxc:ProgressRing Name="ProgressRing" IsActive="False" Margin="10,0,0,0" />-->
+            <StackPanel Orientation="Vertical" VerticalAlignment="Top">
+                <TextBox x:Name="Host" Header="Host" PlaceholderText="Enter server adress" />
+                <TextBox x:Name="Login" Header="Login" PlaceholderText="Enter login" Margin="0,10,0,0" />
+                <PasswordBox x:Name="Pass" Header="Password" PlaceholderText="Enter your password" AutomationProperties.Name="Simple PasswordBox" Margin="0,10,0,0" />
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,10,0,0">
+                    <ToggleSwitch x:Name="SaveD" Header="Save login data" Toggled="ToggleSwitch_Toggled" OffContent="No" OnContent="Yes" HorizontalAlignment="Left" MinWidth="50" />
+                    <!--<ToggleSwitch x:Name="AutoCon" Header="Autoconnect" Toggled="ToggleSwitch_Toggled_1" OffContent="No" OnContent="Yes" HorizontalAlignment="Center" MinWidth="20" />-->
                 </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Padding="0,15,0,0">
+                    <Button x:Name="RefreshButton" Height="30" Margin="0,0,20,0" FontFamily="Segoe MDL2 Assets" Content="&#xE72C;" IsEnabled="False" Click="RefreshButton_Click" />
+                    <ToggleButton Name="ToggleButton" Content="Connect" VerticalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Width="103"/>
+                    <muxc:ProgressRing Name="ProgressRing" IsActive="False" Margin="10,0,0,0" />
+                </StackPanel>
+                <TextBlock x:Name="InfoBox" Foreground="Red" TextWrapping="Wrap" Text="" Margin="0,15,0,0"/>
+                <TextBlock x:Name="PathHeader" TextWrapping="Wrap" Margin="0,15,0,0"/>
+                <TextBlock x:Name="PathDir" TextWrapping="Wrap" Text="" Margin="0,10,0,0"/>
+                <TextBlock x:Name="FileInfo" TextWrapping="Wrap" Text="" Margin="0,20,0,10"/>
+                <muxc:ProgressBar Name="Progress" Value="0" Visibility="Collapsed" />
             </StackPanel>
         </ScrollViewer>
-
-        <ListView x:Name="DirectoryList" BorderThickness="0" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Margin="250,44,0,0">
-            <ListView.ContextFlyout>
-                <MenuFlyout>
-                    <MenuFlyoutItem x:Name="Upload" Text="Upload" Icon="Upload"/>
-                    <MenuFlyoutItem x:Name="CerateFolder" Click="CerateFolder_Click" Text="Create folder" Icon="Add"/>
-                </MenuFlyout>
-            </ListView.ContextFlyout>
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:Item">
-                    <Grid Margin="0,12,0,12" AutomationProperties.Name="{x:Bind Name}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="120" />
-                            <ColumnDefinition Width="80" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{x:Bind Type}" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Name}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Size}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind LastModificate}" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <AppBarButton Icon="Setting" Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Height="45">
-                            <AppBarButton.Flyout>
-                                <MenuFlyout>
-                                    <MenuFlyoutItem x:Name="Download" Text="Download" Icon="Download"/>
-                                    <MenuFlyoutItem x:Name="Delete" Click="Delete_Click" Text="Delete" Icon="Delete"/>
-                                </MenuFlyout>
-                            </AppBarButton.Flyout>
-                        </AppBarButton>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+        <StackPanel>
+            <Grid Margin="262,20,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="0.25*" />
+                    <ColumnDefinition Width="212" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Type" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Text="Name" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Text="Size" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock Text="Last modificate" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Grid>
+        </StackPanel>
+        <ListView x:Name="DirectoryList" BorderThickness="0" BorderBrush="{ThemeResource SystemControlForegroundBaseMediumLowBrush}" Margin="250,50,0,0" ItemClick="DirectoryList_ItemClick" IsItemClickEnabled="True">
+                <ListView.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem x:Name="Upload" Click="Upload_Click" Text="Upload" Icon="Upload"/>
+                        <MenuFlyoutItem x:Name="CerateFolder" Click="CerateFolder_Click" Text="Create folder" Icon="Add"/>
+                    </MenuFlyout>
+                </ListView.ContextFlyout>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:ItemInfo">
+                        <Grid Margin="0,12,0,12" AutomationProperties.Name="{x:Bind Name}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.25*" />
+                                <ColumnDefinition Width="120" />
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{x:Bind Type}" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind Name}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind Size}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{x:Bind LastModificate}" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <AppBarButton Icon="Setting" IsEnabled="{x:Bind isNotReturnDirectory}" Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Height="45">
+                                <AppBarButton.Flyout>
+                                    <MenuFlyout>
+                                    <MenuFlyoutItem x:Name="Download" IsEnabled="{x:Bind isEnabledOptions}" Click="Download_Click" Text="Download" Icon="Download"/>
+                                        <MenuFlyoutItem x:Name="Delete" Click="Delete_Click" Text="Delete" Icon="Delete"/>
+                                    </MenuFlyout>
+                                </AppBarButton.Flyout>
+                            </AppBarButton>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
     </Grid>
 </Page>
     
