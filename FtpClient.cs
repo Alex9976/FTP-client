@@ -24,6 +24,9 @@ namespace FTP_client
         public string CurrentDirectory { get; set; } = "";
         private readonly int BUFFER_SIZE = 4096 * 2;
         public int progress { get; set; } = 0;
+        public delegate void ProgressStatusUpdate();
+        public event ProgressStatusUpdate Notify;
+        public event ProgressStatusUpdate TransferComplete;
 
         public ItemInfo[] ListDirectory(string path)
         {
@@ -35,7 +38,6 @@ namespace FTP_client
             ftpRequest.UseBinary = true;
             ftpRequest.UsePassive = true;
             ftpRequest.KeepAlive = true;
-            //ftpRequest.Timeout = 7000;
 
             string response;
             using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())
@@ -73,17 +75,17 @@ namespace FTP_client
                         {
                             while ((size = responseStream.Read(buffer, 0, BUFFER_SIZE)) > 0)
                             {
-                                //byte[] buf = new byte[size];
-                                //Array.Copy(buffer, 0, buf, 0, size);
-                                //await FileIO.AppendTextAsync(file, Encoding.ASCII.GetString(buf));
                                 fileStream.Write(buffer, 0, size);
                                 bytesRead += size;
-                                progress = (int)(((float)bytesRead / fileSize) * 100);
+                                progress = (int)((float)bytesRead / fileSize * 100);
+                                Notify();
                             }
                         }
                     }
                 }
                 progress = 100;
+                Notify();
+                TransferComplete();
             }
             catch /*(Exception ex)*/
             {

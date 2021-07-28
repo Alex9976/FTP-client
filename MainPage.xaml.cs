@@ -32,7 +32,7 @@ namespace FTP_client
     public sealed partial class MainPage : Page
     {
         ObservableCollection<ItemInfo> list = new ObservableCollection<ItemInfo>();
-        Windows.Storage.ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+        ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
 
         FtpClient ftp = new FtpClient();
         private int _previousIndex { get; set; } = -2;
@@ -61,6 +61,9 @@ namespace FTP_client
 
             _isInitToggle = false;
             DirectoryList.ItemsSource = list;
+
+            ftp.Notify += UpdateProgress;
+            ftp.TransferComplete += TransferComplete;
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -375,7 +378,7 @@ namespace FTP_client
             if (_blockLoad)
                 return;
 
-            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            var savePicker = new FileSavePicker();
             savePicker.FileTypeChoices.Add("All types", new List<string>() { "." });
             savePicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.Downloads;
 
@@ -388,37 +391,40 @@ namespace FTP_client
                 Thread thread = new Thread(UpdateProgress);
                 thread.Start();
 
-                Thread downloadThread = new Thread(() => { ftp.DownloadFile(ftp.CurrentDirectory, item.Name, file, item.SizeInBytes); });
+                Thread downloadThread = new Thread(() => { 
+                    ftp.DownloadFile(ftp.CurrentDirectory, item.Name, file, item.SizeInBytes);                  
+                });
                 downloadThread.Start();
             }
         }
 
         private async void UpdateProgress()
         {
-            bool flag = true;
-            while (flag)
-            {
-                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                {
-                    _blockLoad = true;
-                    Progress.Value = ftp.progress;
-                    if (ftp.progress == 100)
-                    {
-                        flag = false;
-                        FileInfo.Text = "Completed!";
-                    }
-                });
-                Thread.Sleep(400);
-            }
-            Thread.Sleep(1000);
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                Progress.Value = 0;
-                ftp.progress = 0;
-                FileInfo.Text = "";
-                _blockLoad = false;
-                Progress.Visibility = Visibility.Collapsed;
+                _blockLoad = true;
+                Progress.Value = ftp.progress;
             });
+        }
+
+        private async void TransferComplete()
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                FileInfo.Text = "Completed!";
+            });
+            Thread thread = new Thread(async () => {
+                Thread.Sleep(1000);
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Progress.Value = 0;
+                    ftp.progress = 0;
+                    FileInfo.Text = "";
+                    _blockLoad = false;
+                    Progress.Visibility = Visibility.Collapsed;
+                });
+            });
+            thread.Start(); 
         }
 
         private void Upload_Click(object sender, RoutedEventArgs e)
