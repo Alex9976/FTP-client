@@ -9,5 +9,7 @@ This client is only supported on Windows 11.
 * Connect to FTP server.
      * Using a user name and a password.
      * Using anonymous authentication.
+     * Ability to save login details.
 * Upload of `byte[]` arrays.
 * Download of `byte[]` arrays.
+* Renaming files/folders.
