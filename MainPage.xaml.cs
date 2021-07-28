@@ -39,6 +39,8 @@ namespace FTP_client
         private bool _saveData { get; set; } = false;
         private bool _blockLoad { get; set; } = false;
         private bool _isInitToggle { get; set; } = true;
+        private DateTime _previousDateClick {  get; set; } = DateTime.Now;
+        public const long TicksPerMillisecond = 10000;
 
         public MainPage()
         {
@@ -64,10 +66,10 @@ namespace FTP_client
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             InfoBox.Text = "";
-            ProgressRing.IsActive = true;
+            ProgressMainRing.IsActive = true;
             ToggleButton.Content = "Connecting...";
             ToggleButton.IsEnabled = false;
-            ftp.Host = Host.Text;//"speedtest.tele2.net";//"test.rebex.net";"speedtest.tele2.net";
+            ftp.Host = Host.Text;//"speedtest.tele2.net";
             ftp.Login = Login.Text;
             ftp.Password = Pass.Password;
             if (_saveData)
@@ -76,6 +78,7 @@ namespace FTP_client
                 localSettings.Values["login"] = Login.Text;
                 localSettings.Values["password"] = Pass.Password;
             }
+
             Thread thread = new Thread(Connect);
             thread.Start();
         }
@@ -95,7 +98,7 @@ namespace FTP_client
 
                     PathHeader.Text = "Path:";
                     PathDir.Text = "/";
-                    ProgressRing.IsActive = false;
+                    ProgressMainRing.IsActive = false;
                     RefreshButton.IsEnabled = true;
                     ToggleButton.Content = "Disconnect";
                 });
@@ -119,7 +122,7 @@ namespace FTP_client
                     }
                     PathHeader.Text = "";
                     ToggleButton.IsChecked = false;
-                    ProgressRing.IsActive = false;
+                    ProgressMainRing.IsActive = false;
                 });
             }
             finally
@@ -188,24 +191,26 @@ namespace FTP_client
                 {
                     try
                     {
-                        ftp.DeleteFile(Path.Combine(ftp.CurrentDirectory, item.Name));
+                        ftp.Delete(ftp.CurrentDirectory + "/" + item.Name, ItemType.File);
                         list.Remove(item);
                     }
-                    catch (Exception ex)
+                    catch /*(Exception ex)*/
                     {
-                        InfoBox.Text = ex.Message;
+                        //InfoBox.Text = ex.Message;
+                        InfoBox.Text = "No access to the file. it may have been deleted";
                     }
                 }
                 else
                 {
                     try
                     {
-                        ftp.RemoveDirectory(Path.Combine(ftp.CurrentDirectory, item.Name));
+                        ftp.Delete(ftp.CurrentDirectory + "/" + item.Name, ItemType.Folder);
                         list.Remove(item);
                     }
-                    catch (Exception ex)
+                    catch /*(Exception ex)*/
                     {
-                        InfoBox.Text = ex.Message;
+                        //InfoBox.Text = ex.Message;
+                        InfoBox.Text = "The folder is not empty or has already been deleted";
                     }
                 }
             }
@@ -215,14 +220,14 @@ namespace FTP_client
         {
             ItemInfo item = e.ClickedItem as ItemInfo;
 
-            if (_previousIndex == list.IndexOf(item))
+            if ((_previousIndex == list.IndexOf(item)) && (DateTime.Now.Ticks - _previousDateClick.Ticks <= TicksPerMillisecond * 500))
             {
-                if (!ProgressRing.IsActive)
+                if (!ProgressMainRing.IsActive)
                 {
                     InfoBox.Text = "";
                     if (item.Type == ItemType.Folder)
                     {
-                        ProgressRing.IsActive = true;
+                        ProgressMainRing.IsActive = true;
                         OpenDirectory(item);
                     }
                     else if (item.Type == ItemType.File)
@@ -231,8 +236,11 @@ namespace FTP_client
                     }
                 }
                 _previousIndex = -1;
+
+                return;
             }
             _previousIndex = list.IndexOf(item);
+            _previousDateClick = DateTime.Now;
         }
 
         private void ToggleSwitch_Toggled(object sender, RoutedEventArgs e)
@@ -286,7 +294,7 @@ namespace FTP_client
                             list.Add(s);
                         }
                         PathDir.Text = ftp.CurrentDirectory == "" ? "/" : ftp.CurrentDirectory;
-                        ProgressRing.IsActive = false;
+                        ProgressMainRing.IsActive = false;
                     });
                 }
                 catch (Exception ex)
@@ -303,7 +311,7 @@ namespace FTP_client
                                 break;
                         }
 
-                        ProgressRing.IsActive = false;
+                        ProgressMainRing.IsActive = false;
                     });
                 }
             });
@@ -313,7 +321,8 @@ namespace FTP_client
 
         private void RefreshDirectory()
         {
-            ProgressRing.IsActive = true;
+            
+            ProgressMainRing.IsActive = true;
             Thread thread = new Thread(async () =>
             {
                 try
@@ -329,7 +338,7 @@ namespace FTP_client
                             list.Add(s);
                         }
                         PathDir.Text = ftp.CurrentDirectory == "" ? "/" : ftp.CurrentDirectory;
-                        ProgressRing.IsActive = false;
+                        ProgressMainRing.IsActive = false;
                     });
                 }
                 catch (Exception ex)
@@ -346,7 +355,7 @@ namespace FTP_client
                                 break;
                         }
 
-                        ProgressRing.IsActive = false;
+                        ProgressMainRing.IsActive = false;
                     });
                 }
             });

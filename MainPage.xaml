@@ -22,7 +22,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Padding="0,15,0,0">
                     <Button x:Name="RefreshButton" Height="32" Margin="0,0,20,0" FontFamily="Segoe MDL2 Assets" Content="&#xE72C;" IsEnabled="false" Click="RefreshButton_Click" />
                     <ToggleButton Name="ToggleButton" Content="Connect" VerticalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked" Width="103"/>
-                    <muxc:ProgressRing Name="ProgressRing" IsActive="False" Margin="10,0,0,0" />
+                    <muxc:ProgressRing Name="ProgressMainRing" IsActive="False" Margin="10,0,0,0" />
                 </StackPanel>
                 <TextBlock x:Name="InfoBox" Foreground="Red" TextWrapping="Wrap" Text="" Margin="0,15,0,0"/>
                 <TextBlock x:Name="PathHeader" TextWrapping="Wrap" Margin="0,15,0,0"/>

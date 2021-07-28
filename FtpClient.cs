@@ -127,12 +127,16 @@ namespace FTP_client
             }
         }
 
-        public void DeleteFile(string path)
+        public void Delete(string path, ItemType itemType)
         {
             ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path);
             ftpRequest.Credentials = new NetworkCredential(Login, Password);
             ftpRequest.EnableSsl = UseSSL;
-            ftpRequest.Method = WebRequestMethods.Ftp.DeleteFile;
+
+            if (itemType == ItemType.File)
+                ftpRequest.Method = WebRequestMethods.Ftp.DeleteFile;
+            else
+                ftpRequest.Method = WebRequestMethods.Ftp.RemoveDirectory;
 
             FtpWebResponse ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
             ftpResponse.Close();
@@ -140,23 +144,11 @@ namespace FTP_client
 
         public void CreateDirectory(string path, string folderName)
         {
-            FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Path.Combine(Host, path, folderName));
+            FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path + "/" + folderName);
 
             ftpRequest.Credentials = new NetworkCredential(Login, Password);
             ftpRequest.EnableSsl = UseSSL;
             ftpRequest.Method = WebRequestMethods.Ftp.MakeDirectory;
-
-            FtpWebResponse ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
-            ftpResponse.Close();
-        }
-
-        public void RemoveDirectory(string path)
-        {
-            string filename = path;
-            FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path);
-            ftpRequest.Credentials = new NetworkCredential(Login, Password);
-            ftpRequest.EnableSsl = UseSSL;
-            ftpRequest.Method = WebRequestMethods.Ftp.RemoveDirectory;
 
             FtpWebResponse ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
             ftpResponse.Close();
