@@ -24,6 +24,10 @@ namespace FTP_client
         public FolderNameInputDlg()
         {
             this.InitializeComponent();
+
+            PrimaryButtonStyle = (Style)Resources["ContentDialogPrimaryButtonStyle"];
+            SecondaryButtonStyle = (Style)Resources["ContentDialogPrimaryButtonStyle"];
+            DefaultButton = ContentDialogButton.Primary;
         }
 
         public string Text

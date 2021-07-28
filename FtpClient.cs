@@ -105,8 +105,6 @@ namespace FTP_client
                 ftpRequest.UsePassive = true;
                 ftpRequest.KeepAlive = true;
 
-                //IBuffer buffer = await FileIO.ReadBufferAsync(file);
-
                 using (Stream stream = await file.OpenStreamForReadAsync())
                 {
                     using (Stream requestStream = ftpRequest.GetRequestStream())
