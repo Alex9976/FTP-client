@@ -1,29 +1,15 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Numerics;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Contacts;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace FTP_client
@@ -445,9 +431,6 @@ namespace FTP_client
             StorageFile file = await openPicker.PickSingleFileAsync();
             if (file != null)
             {
-                //FileInfo.Text = "Uploading: " + file.DisplayName;
-                //Thread thread = new Thread(UpdateProgress);
-                //thread.Start();
                 Thread thread = new Thread(async () =>
                 {
                     ftp.UploadFile(ftp.CurrentDirectory, file);

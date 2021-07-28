@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using System.Threading.Tasks;
 using Windows.Storage;
-using Windows.Storage.Streams;
 
 namespace FTP_client
 {
@@ -28,6 +22,11 @@ namespace FTP_client
         public event ProgressStatusUpdate Notify;
         public event ProgressStatusUpdate TransferComplete;
 
+        /// <summary>
+        /// LIST method
+        /// </summary>
+        /// <param name="path">Directory path</param>
+        /// <returns>Array of files and directories</returns>
         public ItemInfo[] ListDirectory(string path)
         {
             path = string.IsNullOrWhiteSpace(path) ? "/" : path;
@@ -50,6 +49,13 @@ namespace FTP_client
             return parser.FullListing;
         }
 
+        /// <summary>
+        /// RETR method
+        /// </summary>
+        /// <param name="path">Directory path</param>
+        /// <param name="fileName">File name</param>
+        /// <param name="file">StorageFile object</param>
+        /// <param name="fileSize">Size of downloading file</param>
         public async void DownloadFile(string path, string fileName, StorageFile file, long fileSize)
         {
             try
@@ -62,7 +68,6 @@ namespace FTP_client
                 ftpRequest.UsePassive = true;
                 ftpRequest.KeepAlive = true;
                 
-
                 using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())
                 {
                     progress = 0;
@@ -87,12 +92,17 @@ namespace FTP_client
                 Notify();
                 TransferComplete();
             }
-            catch /*(Exception ex)*/
+            catch
             {
-                //throw new Exception("Download error");
+                Debug.WriteLine("Download error");
             }
         }
 
+        /// <summary>
+        /// STOR method
+        /// </summary>
+        /// <param name="path">Directory path</param>
+        /// <param name="file">StorageFile object</param>
         public async void UploadFile(string path, StorageFile file)
         {
             try
@@ -114,19 +124,19 @@ namespace FTP_client
                         stream.CopyTo(requestStream);
                     }
                 }
-               
-                using (ftpResponse = (FtpWebResponse)ftpRequest.GetResponse())
-                {
-                    //var a = ftpResponse.StatusDescription;
-                }
-
+                ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
             }
             catch
             {
-                //throw new Exception("Upload error");
+                Debug.WriteLine("Upload error");
             }
         }
 
+        /// <summary>
+        /// RMD & DELE methods
+        /// </summary>
+        /// <param name="path">File/directory path</param>
+        /// <param name="itemType">Item type (file or directory)</param>
         public void Delete(string path, ItemType itemType)
         {
             ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path);
@@ -142,6 +152,11 @@ namespace FTP_client
             ftpResponse.Close();
         }
 
+        /// <summary>
+        /// RENAME method
+        /// </summary>
+        /// <param name="path">File/directory path</param>
+        /// <param name="name">New name</param>
         public void Rename(string path, string name)
         {
             ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path);
@@ -154,6 +169,11 @@ namespace FTP_client
             ftpResponse.Close();
         }
 
+        /// <summary>
+        /// MKD method
+        /// </summary>
+        /// <param name="path">Directory path</param>
+        /// <param name="folderName">Name of the new directory</param>
         public void CreateDirectory(string path, string folderName)
         {
             FtpWebRequest ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path + "/" + folderName);
@@ -166,6 +186,11 @@ namespace FTP_client
             ftpResponse.Close();
         }
 
+        /// <summary>
+        /// Returns the path of the parent directory
+        /// </summary>
+        /// <param name="path">Directory path</param>
+        /// <returns>Parent directory</returns>
         public string GetParentDirectory(string path)
         {
             path.TrimEnd('/');

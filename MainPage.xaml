@@ -14,7 +14,7 @@
             <StackPanel Orientation="Vertical" VerticalAlignment="Top">
                 <TextBox x:Name="Host" Header="Host" PlaceholderText="Enter server adress" />
                 <TextBox x:Name="Login" Header="Login" PlaceholderText="Enter login" Margin="0,10,0,0" />
-                <PasswordBox x:Name="Pass" Header="Password" PlaceholderText="Enter your password" AutomationProperties.Name="Simple PasswordBox" Margin="0,10,0,0" />
+                <PasswordBox x:Name="Pass" Header="Password" PlaceholderText="Enter your password" Margin="0,10,0,0" />
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0,10,0,0">
                     <ToggleSwitch x:Name="SaveD" Header="Save login data" Toggled="ToggleSwitch_Toggled" OffContent="No" OnContent="Yes" HorizontalAlignment="Left" MinWidth="50" />
                     <!--<ToggleSwitch x:Name="AutoCon" Header="Autoconnect" Toggled="ToggleSwitch_Toggled_1" OffContent="No" OnContent="Yes" HorizontalAlignment="Center" MinWidth="20" />-->

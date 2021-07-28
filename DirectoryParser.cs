@@ -14,7 +14,7 @@ namespace FTP_client
         readonly string patternUnixStyle = @"^(?<flags>[\w-]+)\s+(?<inode>\d+)\s+(?<owner>\w+)\s+(?<group>\w+)\s+" +
             @"(?<size>\d+)\s+(?<datetime>\w+\s+\d+\s+\d+|\w+\s+\d+\s+\d+:\d+)\s+(?<name>.+)$";
         readonly string patternWindowsStyle = @"^(?<datetime>\d+-\d+-\d+\s+\d+:\d+(?:AM|PM))\s+(?<sizeordir><DIR>|\d+)\s+(?<name>.+)$";
-        readonly string[] sizeSuffixes = { "byte", "kB", "MB", "GB", "TB", "PB", "EB", "ZB", "EB" };
+        readonly string[] sizeSuffixes = { "byte", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "EB" };
 
         public ItemInfo[] FullListing
         {
@@ -61,6 +61,11 @@ namespace FTP_client
             _myListArray = GetList(responseString);
         }
 
+        /// <summary>
+        /// Gets a list of files and directories from the response
+        /// </summary>
+        /// <param name="datastring">Response data</param>
+        /// <returns>List of files and directories</returns>
         private List<ItemInfo> GetList(string datastring)
         {
             List<ItemInfo> myListArray = new List<ItemInfo>();
@@ -90,6 +95,11 @@ namespace FTP_client
             return myListArray;
         }
 
+        /// <summary>
+        /// Parsing the record if the FTP server is running on Windows
+        /// </summary>
+        /// <param name="record">Record</param>
+        /// <returns>File structure</returns>
         private ItemInfo ParseFileStructFromWindowsStyleRecord(string record)
         {
             ItemInfo fileStruct = new ItemInfo();
@@ -119,6 +129,11 @@ namespace FTP_client
             return fileStruct;
         }
 
+        /// <summary>
+        /// Identifies the operating system that the FTP server is running on
+        /// </summary>
+        /// <param name="recordList">Recordings</param>
+        /// <returns>Record style</returns>
         public FileListStyle GuessFileListStyle(string[] recordList)
         {
             foreach (string s in recordList)
@@ -137,6 +152,11 @@ namespace FTP_client
             return FileListStyle.Unknown;
         }
 
+        /// <summary>
+        /// Parsing the record if the FTP server is running on Unix
+        /// </summary>
+        /// <param name="record">Record</param>
+        /// <returns>File structure</returns>
         private ItemInfo ParseFileStructFromUnixStyleRecord(string record)
         {
             ItemInfo fileStruct = new ItemInfo();
@@ -161,6 +181,11 @@ namespace FTP_client
             return fileStruct;
         }
 
+        /// <summary>
+        /// Converts the number of bytes to KB, MB, etc.
+        /// </summary>
+        /// <param name="value">Size in bytes</param>
+        /// <returns>Size with suffix</returns>
         private string AddSizeSuffix(long value)
         {
             if (value < 0) { return "-" + AddSizeSuffix(-value); }
@@ -177,6 +202,11 @@ namespace FTP_client
             return string.Format("{0:n0} {1}", adjustedSize, sizeSuffixes[mag]);
         }
 
+        /// <summary>
+        /// Get time from record
+        /// </summary>
+        /// <param name="record">Record</param>
+        /// <returns>Time</returns>
         private string getCreateTimeString(string record)
         {
             string month = "(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)";
