@@ -272,7 +272,7 @@ namespace FTP_client
             string name = item.Name;
             if (name != "..")
             {
-                ftp.CurrentDirectory = Path.Combine(ftp.CurrentDirectory, "/", name);
+                ftp.CurrentDirectory = ftp.CurrentDirectory + Path.Combine(ftp.CurrentDirectory, "/", name);
             }
             else
             {
