@@ -39,7 +39,7 @@ namespace FTP_client
         private bool _saveData { get; set; } = false;
         private bool _blockLoad { get; set; } = false;
         private bool _isInitToggle { get; set; } = true;
-        private DateTime _previousDateClick {  get; set; } = DateTime.Now;
+        private DateTime _previousDateClick { get; set; } = DateTime.Now;
         public const long TicksPerMillisecond = 10000;
 
         public MainPage()
@@ -147,7 +147,7 @@ namespace FTP_client
         private async void CerateFolder_Click(object sender, RoutedEventArgs e)
         {
             InfoBox.Text = "";
-            var dialog = new FolderNameInputDlg();
+            var dialog = new InputDialog();
             var result = await dialog.ShowAsync();
             if (result == ContentDialogResult.Primary)
             {
@@ -321,7 +321,7 @@ namespace FTP_client
 
         private void RefreshDirectory()
         {
-            
+
             ProgressMainRing.IsActive = true;
             Thread thread = new Thread(async () =>
             {
@@ -432,7 +432,7 @@ namespace FTP_client
                 return;
 
             var openPicker = new FileOpenPicker();
-            openPicker.ViewMode = PickerViewMode.Thumbnail; 
+            openPicker.ViewMode = PickerViewMode.Thumbnail;
             openPicker.FileTypeFilter.Add("*");
             openPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
@@ -442,14 +442,15 @@ namespace FTP_client
                 //FileInfo.Text = "Uploading: " + file.DisplayName;
                 //Thread thread = new Thread(UpdateProgress);
                 //thread.Start();
-                Thread thread = new Thread(async () => {
+                Thread thread = new Thread(async () =>
+                {
                     ftp.UploadFile(ftp.CurrentDirectory, file);
                     await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         RefreshDirectory();
                     });
                 });
-                thread.Start();      
+                thread.Start();
             }
         }
 
@@ -457,6 +458,31 @@ namespace FTP_client
         {
             InfoBox.Text = "";
             RefreshDirectory();
+        }
+
+        private async void Rename_Click(object sender, RoutedEventArgs e)
+        {
+            InfoBox.Text = "";
+            MenuFlyoutItem menuFlyoutItem = (MenuFlyoutItem)sender;
+            ItemInfo item = menuFlyoutItem.DataContext as ItemInfo;
+            var dialog = new InputDialog();
+            dialog.Title = "New name:";
+            dialog.Text = item.Name;
+            var result = await dialog.ShowAsync();
+            if (result == ContentDialogResult.Primary)
+            {
+                var newName = dialog.Text;
+                try
+                {
+                    ftp.Rename(ftp.CurrentDirectory + "/" + item.Name, newName);
+                    RefreshDirectory();
+                }
+                catch (Exception ex)
+                {
+                    InfoBox.Text = ex.Message;
+                }
+
+            }
         }
     }
 }

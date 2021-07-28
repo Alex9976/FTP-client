@@ -15,13 +15,13 @@ using Windows.UI.Xaml.Navigation;
 
 namespace FTP_client
 {
-    public sealed partial class FolderNameInputDlg : ContentDialog
+    public sealed partial class InputDialog : ContentDialog
     {
         public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
-            "Text", typeof(string), typeof(FolderNameInputDlg), new PropertyMetadata(default(string)));
+            "Text", typeof(string), typeof(InputDialog), new PropertyMetadata(default(string)));
 
 
-        public FolderNameInputDlg()
+        public InputDialog()
         {
             this.InitializeComponent();
 

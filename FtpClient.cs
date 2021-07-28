@@ -85,7 +85,7 @@ namespace FTP_client
                 }
                 progress = 100;
             }
-            catch (Exception ex)
+            catch /*(Exception ex)*/
             {
                 //throw new Exception("Download error");
             }
@@ -97,7 +97,7 @@ namespace FTP_client
             {
                 Windows.Storage.FileProperties.BasicProperties basicProperties = await file.GetBasicPropertiesAsync();
                 long fileSize = (long)basicProperties.Size;
-                ftpRequest = (FtpWebRequest)WebRequest.Create(Uri.EscapeUriString("ftp://" + Host + path + "/" + file.DisplayName));
+                ftpRequest = (FtpWebRequest)WebRequest.Create(Uri.EscapeUriString("ftp://" + Host + path + "/" + file.Name));
                 ftpRequest.Credentials = new NetworkCredential(Login, Password);
                 ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
                 ftpRequest.EnableSsl = UseSSL;
@@ -135,6 +135,18 @@ namespace FTP_client
                 ftpRequest.Method = WebRequestMethods.Ftp.DeleteFile;
             else
                 ftpRequest.Method = WebRequestMethods.Ftp.RemoveDirectory;
+
+            FtpWebResponse ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
+            ftpResponse.Close();
+        }
+
+        public void Rename(string path, string name)
+        {
+            ftpRequest = (FtpWebRequest)WebRequest.Create("ftp://" + Host + path);
+            ftpRequest.Credentials = new NetworkCredential(Login, Password);
+            ftpRequest.EnableSsl = UseSSL;
+            ftpRequest.Method = WebRequestMethods.Ftp.Rename;
+            ftpRequest.RenameTo = name;
 
             FtpWebResponse ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
             ftpResponse.Close();
