@@ -63,7 +63,7 @@
                             <ColumnDefinition Width="80" />
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{x:Bind Type}" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="{x:Bind Name}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="{x:Bind Name}" TextWrapping="Wrap" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="{x:Bind Size}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="{x:Bind LastModificate}" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <Button FontFamily="Segoe MDL2 Assets" Content="&#xE713;" IsEnabled="{x:Bind isNotReturnDirectory}" Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Height="35">

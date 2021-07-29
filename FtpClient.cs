@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using Windows.Storage;
+using Windows.Storage.Streams;
+using static System.Net.WebRequestMethods;
 
 namespace FTP_client
 {
@@ -21,6 +25,8 @@ namespace FTP_client
         public delegate void ProgressStatusUpdate();
         public event ProgressStatusUpdate Notify;
         public event ProgressStatusUpdate TransferComplete;
+        public event ProgressStatusUpdate UploadComplete;
+        public event ProgressStatusUpdate TransferFail;
 
         /// <summary>
         /// LIST method
@@ -94,6 +100,7 @@ namespace FTP_client
             }
             catch
             {
+                TransferFail();
                 Debug.WriteLine("Download error");
             }
         }
@@ -119,15 +126,29 @@ namespace FTP_client
 
                 using (Stream stream = await file.OpenStreamForReadAsync())
                 {
+
                     using (Stream requestStream = ftpRequest.GetRequestStream())
                     {
-                        stream.CopyTo(requestStream);
+                        byte[] buffer = new byte[BUFFER_SIZE];
+                        int size;
+                        int bytesRead = 0;
+                        while ((size = stream.Read(buffer, 0, BUFFER_SIZE)) > 0)
+                        {
+                            requestStream.Write(buffer, 0, size);
+                            bytesRead += size;
+                            progress = (int)((float)bytesRead / fileSize * 100);
+                            Notify();
+                        }
+                        //stream.CopyTo(requestStream);
                     }
                 }
                 ftpResponse = (FtpWebResponse)ftpRequest.GetResponse();
+                TransferComplete();
+                UploadComplete();
             }
             catch
             {
+                TransferFail();
                 Debug.WriteLine("Upload error");
             }
         }

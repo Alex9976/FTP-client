@@ -50,6 +50,8 @@ namespace FTP_client
 
             ftp.Notify += UpdateProgress;
             ftp.TransferComplete += TransferComplete;
+            ftp.UploadComplete += UpdateAsyncDir;
+            ftp.TransferFail += TransferFail;
         }
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
@@ -431,15 +433,16 @@ namespace FTP_client
             StorageFile file = await openPicker.PickSingleFileAsync();
             if (file != null)
             {
-                Thread thread = new Thread(async () =>
+                FileInfo.Text = "Uploading: " + file.Name;
+                Progress.Visibility = Visibility.Visible;
+                Thread thread = new Thread(UpdateProgress);
+                thread.Start();
+
+                Thread uploadThread = new Thread(() =>
                 {
                     ftp.UploadFile(ftp.CurrentDirectory, file);
-                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        RefreshDirectory();
-                    });
                 });
-                thread.Start();
+                uploadThread.Start();
             }
         }
 
@@ -447,6 +450,18 @@ namespace FTP_client
         {
             InfoBox.Text = "";
             RefreshDirectory();
+        }
+
+        private void UpdateAsyncDir()
+        {
+            Thread thread = new Thread(async () =>
+            {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    RefreshDirectory();
+                });
+            });
+            thread.Start();
         }
 
         private async void Rename_Click(object sender, RoutedEventArgs e)
@@ -472,6 +487,27 @@ namespace FTP_client
                 }
 
             }
+        }
+
+        private void TransferFail()
+        {
+            Thread thread = new Thread(async () => {
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    InfoBox.Text = "Operation error";
+                    _blockLoad = false;
+                });
+                Thread.Sleep(1000);
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                {
+                    Progress.Value = 0;
+                    ftp.progress = 0;
+                    FileInfo.Text = "";
+                    InfoBox.Text = "";
+                    Progress.Visibility = Visibility.Collapsed;
+                });
+            });
+            thread.Start();
         }
     }
 }
